@@ -12,23 +12,30 @@ parser.add_argument('fasta_infile', help='FASTA file with the reference')
 parser.add_argument('-L', '--window', type=int, default=3000,
      help='length of the sliding window')
 parser.add_argument('-c', '--contig', 
-    help='only use this conting in the reference file')
+    help='only use this contig in the reference file')
 parser.add_argument('-d', '--dimer', default = "CG",
     help='dimer to compute the force for')
+parser.add_argument('-e', '--end', type=int,
+    help='end at this coordinate in the --contig, 1-based')
+parser.add_argument('-s', '--start', type=int,
+    help='start at this coordinate in the --contig, 1-based')
 
 args = parser.parse_args()
 
-nt2int = {"A":0, "C":1, "G":2, "T":3, "U":3}
-nt1 = nt2int[args.dimer[0].upper()]
-nt2 = nt2int[args.dimer[1].upper()]
 
 for rec in SeqIO.parse(args.fasta_infile, "fasta"):
     if args.contig and rec.id != args.contig:
         continue
     seq = str(rec.seq).upper().replace("U", "T")
-    for start in range(len(seq) - args.window + 1):
-        subseq = seq[start:start+args.window]
-        dForce = wc.DimerForce(subseq, nt1, nt2)
-        N_ACGT = wc.count_words(subseq, 1, normalize=False).sum()
-        sys.stdout.write("{}\t{}\t{}\t{}\n".format(rec.id, start + 1, N_ACGT,
+    if args.start is None or args.end is None:
+        start = 0
+        end = len(seq) - args.window + 1
+    else:
+        start = max(0, args.start -1)
+        end = min(len(seq) - args.window + 1, args.end)
+    for pos in range(start, end):
+        subseq = seq[pos:pos+args.window]
+        dForce = wc.DimerForce(subseq, args.dimer)
+        N_Valid = wc.count_overlapping_words(subseq, 2, normalize=False).sum()
+        sys.stdout.write("{}\t{}\t{}\t{}\n".format(rec.id, pos + 1, N_Valid,
             dForce))

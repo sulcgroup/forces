@@ -458,7 +458,23 @@ static PyObject* alphabet_size_ext(PyObject* self, PyObject* args)
 	
 	Py_ssize_t ALPHABET_SIZE = alphabet_size(alphabet);
 
-    return Py_BuildValue("i", ALPHABET_SIZE);
+    return Py_BuildValue("n", ALPHABET_SIZE);
+}
+
+
+static PyObject* nt2int_ext(PyObject* self, PyObject* args)
+{
+    char ch;
+    char alphabet;
+    
+    if (!PyArg_ParseTuple(args, "cc", &ch, &alphabet)) {
+		return NULL;
+	}
+    
+    Py_ssize_t (*char2int)(char) = select_char2int(alphabet);
+    Py_ssize_t numeric_repr = char2int(ch);
+    
+    return Py_BuildValue("n", numeric_repr);
 }
 
 
@@ -475,9 +491,12 @@ static PyMethodDef WordCountMethods[] =
 	{"alphabet_size", alphabet_size_ext,
 		METH_VARARGS, "Size of the alphabet.\n" 
 		"Arguments: alphabet type"},
+    {"nt2int", nt2int_ext,
+		METH_VARARGS, "Numeric index of the character.\n" 
+        "Arguments: character, alphabet code"},
 	{NULL, NULL, 0, NULL}
 };
- 
+
 static struct PyModuleDef wordcountmodule_definition = {
     PyModuleDef_HEAD_INIT,
     "_wordcount",   /* name of module */

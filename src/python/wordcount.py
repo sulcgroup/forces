@@ -2,7 +2,6 @@
 Word counting/dimer bias computing module
 """
 
-import sys
 from math import log, exp
 import numpy as np
 from scipy import linalg
@@ -35,6 +34,12 @@ def _alphabet_code(alphabet):
         # reduced amino acid
         return b'r'
     raise WordCountException('Unknown alphabet: {}'.format(alphabet))
+
+
+def _nt2int(ch, alphabet):
+    alphabet_code = _alphabet_code(alphabet)
+    b_ch = bytes(ch, "ASCII")
+    return _wordcount.nt2int(b_ch, alphabet_code)
 
 
 def _normalize_count(X):
@@ -223,7 +228,7 @@ def DimerForces(seq, alphabet='n', pseudocount=None, tolerance_n=TOLN,
     dnf = dnf.reshape((alph_size, alph_size))
     return dnf
 
-def DimerForce(seq, i, j, alphabet='n', pseudocount=None, tolerance_n=TOLN, 
+def DimerForce(seq, dimer, alphabet='n', pseudocount=None, tolerance_n=TOLN, 
     tolerance_f=TOLF, eps=None, max_iter=MAX_NUM_ITER):
     """
     Compute dimer force (bias)
@@ -240,6 +245,8 @@ def DimerForce(seq, i, j, alphabet='n', pseudocount=None, tolerance_n=TOLN,
     eps = step to use when doing numerical differentiation
     """
     L = len(seq)
+    i = _nt2int(dimer[0], alphabet)
+    j = _nt2int(dimer[1], alphabet)
     F1 = count_overlapping_words(seq, 1, alphabet, normalize=True, 
         pseudocount=pseudocount)
     N2 = count_overlapping_words(seq, 2, alphabet, normalize=False, 
