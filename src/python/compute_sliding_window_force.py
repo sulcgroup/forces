@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import sys
+import math
 import argparse
 from Bio import SeqIO
 import wordcount as wc
@@ -35,7 +36,7 @@ for rec in SeqIO.parse(args.fasta_infile, "fasta"):
         end = min(len(seq) - args.window + 1, args.end)
     for pos in range(start, end):
         subseq = seq[pos:pos+args.window]
-        dForce = wc.DimerForce(subseq, args.dimer)
         N_Valid = wc.count_overlapping_words(subseq, 2, normalize=False).sum()
+        dForce = wc.DimerForce(subseq, args.dimer) if N_Valid > 0 else math.nan
         sys.stdout.write("{}\t{}\t{}\t{}\n".format(rec.id, pos + 1, N_Valid,
             dForce))

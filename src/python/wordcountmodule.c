@@ -462,7 +462,7 @@ static PyObject* alphabet_size_ext(PyObject* self, PyObject* args)
 }
 
 
-static PyObject* nt2int_ext(PyObject* self, PyObject* args)
+static PyObject* res2int_ext(PyObject* self, PyObject* args)
 {
     char ch;
     char alphabet;
@@ -491,7 +491,7 @@ static PyMethodDef WordCountMethods[] =
 	{"alphabet_size", alphabet_size_ext,
 		METH_VARARGS, "Size of the alphabet.\n" 
 		"Arguments: alphabet type"},
-    {"nt2int", nt2int_ext,
+    {"res2int", res2int_ext,
 		METH_VARARGS, "Numeric index of the character.\n" 
         "Arguments: character, alphabet code"},
 	{NULL, NULL, 0, NULL}

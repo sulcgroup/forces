@@ -36,10 +36,10 @@ def _alphabet_code(alphabet):
     raise WordCountException('Unknown alphabet: {}'.format(alphabet))
 
 
-def _nt2int(ch, alphabet):
+def _res2int(ch, alphabet):
     alphabet_code = _alphabet_code(alphabet)
     b_ch = bytes(ch, "ASCII")
-    return _wordcount.nt2int(b_ch, alphabet_code)
+    return _wordcount.res2int(b_ch, alphabet_code)
 
 
 def _normalize_count(X):
@@ -245,8 +245,8 @@ def DimerForce(seq, dimer, alphabet='n', pseudocount=None, tolerance_n=TOLN,
     eps = step to use when doing numerical differentiation
     """
     L = len(seq)
-    i = _nt2int(dimer[0], alphabet)
-    j = _nt2int(dimer[1], alphabet)
+    i = _res2int(dimer[0], alphabet)
+    j = _res2int(dimer[1], alphabet)
     F1 = count_overlapping_words(seq, 1, alphabet, normalize=True, 
         pseudocount=pseudocount)
     N2 = count_overlapping_words(seq, 2, alphabet, normalize=False, 
