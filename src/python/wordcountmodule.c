@@ -237,7 +237,7 @@ static PyObject* count_words(PyObject* self, PyObject* args)
     Py_ssize_t K;
     char alphabet;
  
-    if (!PyArg_ParseTuple(args, "s#iC", &seq, &len, &K, &alphabet)) {
+    if (!PyArg_ParseTuple(args, "s#ic", &seq, &len, &K, &alphabet)) {
 		return NULL;
 	}
 	
@@ -280,7 +280,7 @@ static PyObject* count_overlapping_words(PyObject* self, PyObject* args)
     Py_ssize_t K;
     char alphabet;
  
-    if (!PyArg_ParseTuple(args, "s#iC", &seq, &len, &K, &alphabet)) {
+    if (!PyArg_ParseTuple(args, "s#ic", &seq, &len, &K, &alphabet)) {
 		return NULL;
 	}
 
@@ -352,7 +352,7 @@ PyObject* args)
     Py_ssize_t step;
     char alphabet;
  
-    if (!PyArg_ParseTuple(args, "s#iiiC", &seq, &len, &K, &win_size, &step, 
+    if (!PyArg_ParseTuple(args, "s#iiic", &seq, &len, &K, &win_size, &step, 
     &alphabet)) {
 		return NULL;
 	}
@@ -383,8 +383,8 @@ PyObject* args)
 	}
 
 	// word at each position
-	Py_ssize_t *words = (int*) malloc((len - K + 1) * sizeof(int)); 
-	memset(words, -1, (len - K + 1) * sizeof(int)); // initialize with -1
+	Py_ssize_t *words = (Py_ssize_t*) malloc((len - K + 1) * sizeof(Py_ssize_t)); 
+	memset(words, -1, (len - K + 1) * sizeof(Py_ssize_t)); // initialize with -1
 	// the value of -1 indicates the word is not a valid k-mer
 
     // identify words and store them in a vector
@@ -452,7 +452,7 @@ static PyObject* alphabet_size_ext(PyObject* self, PyObject* args)
 {
     char alphabet;
  
-    if (!PyArg_ParseTuple(args, "C", &alphabet)) {
+    if (!PyArg_ParseTuple(args, "c", &alphabet)) {
 		return NULL;
 	}
 	

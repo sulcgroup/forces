@@ -24,16 +24,16 @@ def _alphabet_code(alphabet):
     la = alphabet.lower()
     if la in ('n', 'na', 'nt', 'nucleotide'):
         # nucleotide alphabet
-        return 'n'
+        return b'n'
     elif la in ('p', 'pp', 'purine-pyrimidine', 'reduced nucleotide'):
         # reduced purine/pyrimidine alphabet
-        return 'p'
+        return b'p'
     elif la in ('a', 'aa', 'amino acid'):
         # amino acid
-        return 'a'
+        return b'a'
     elif la in ('r', 'reduced aa', 'reduced amino acid'):
         # reduced amino acid
-        return 'r'
+        return b'r'
     raise WordCountException('Unknown alphabet: {}'.format(alphabet))
 
 
