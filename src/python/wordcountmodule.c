@@ -237,7 +237,7 @@ static PyObject* count_words(PyObject* self, PyObject* args)
     int K;
     char alphabet;
  
-    if (!PyArg_ParseTuple(args, "s#ic", &seq, &len, &K, &alphabet)) {
+    if (!PyArg_ParseTuple(args, "s#iC", &seq, &len, &K, &alphabet)) {
 		return NULL;
 	}
 	
@@ -280,7 +280,7 @@ static PyObject* count_overlapping_words(PyObject* self, PyObject* args)
     int K;
     char alphabet;
  
-    if (!PyArg_ParseTuple(args, "s#ic", &seq, &len, &K, &alphabet)) {
+    if (!PyArg_ParseTuple(args, "s#iC", &seq, &len, &K, &alphabet)) {
 		return NULL;
 	}
 
@@ -352,7 +352,7 @@ PyObject* args)
     int step;
     char alphabet;
  
-    if (!PyArg_ParseTuple(args, "s#iiic", &seq, &len, &K, &win_size, &step, 
+    if (!PyArg_ParseTuple(args, "s#iiiC", &seq, &len, &K, &win_size, &step, 
     &alphabet)) {
 		return NULL;
 	}
@@ -452,7 +452,7 @@ static PyObject* alphabet_size_ext(PyObject* self, PyObject* args)
 {
     char alphabet;
  
-    if (!PyArg_ParseTuple(args, "c", &alphabet)) {
+    if (!PyArg_ParseTuple(args, "C", &alphabet)) {
 		return NULL;
 	}
 	

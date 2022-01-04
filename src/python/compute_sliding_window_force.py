@@ -29,6 +29,6 @@ for rec in SeqIO.parse(args.fasta_infile, "fasta"):
     for start in range(len(seq) - args.window + 1):
         subseq = seq[start:start+args.window]
         dForce = wc.DimerForce(subseq, nt1, nt2)
-        N_ACGT = wc.count_words(subseq, 1, normalize=False)
-    sys.stdout.write("{}\t{}\t{}\t{}\n".format(rec.id, start + 1, N_ACGT,
-                                               dForce))
+        N_ACGT = wc.count_words(subseq, 1, normalize=False).sum()
+        sys.stdout.write("{}\t{}\t{}\t{}\n".format(rec.id, start + 1, N_ACGT,
+            dForce))
