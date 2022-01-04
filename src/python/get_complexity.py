@@ -1,26 +1,28 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
-#A tool that checks sequence complexity 
+"""
+A tool that checks sequence complexity
+"""
 
-import StringIO ## for Python 2
+from io import BytesIO
 
 import gzip
-import sys
-import Bio
+import argparse
 
-def get_complexity(s):
-    
-    out = StringIO.StringIO()
-    
-    with gzip.GzipFile(fileobj=out, mode="w") as f:
-        f.write(str(s).upper() )
-    return len(out.getvalue())/ ( len(s) * 0.641)  #obtained empirically for ran seqs
+parser = argparse.ArgumentParser(
+    formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+    description='Estimate sequence complexity using gzip; '
+    'output: complexity of the input sequence')
+parser.add_argument('sequence', help='sequence to estimate complexity of')
 
-if __name__ == '__main__':
-    if len(sys.argv) != 2:
-        print ('Usage: %s sequence' % (sys.argv[0]) )
-        print ('Output: complexity of the sequence specified as an input'  )
-        sys.exit(1)
+args = parser.parse_args()
 
-    sequence = sys.argv[1]
-    print(get_complexity(sequence))
+def get_complexity(seq):
+    out = BytesIO()
+    bseq = bytes(str(seq.upper()), encoding="ASCII")
+    with gzip.GzipFile(fileobj=out, mode="wb") as out_file:
+        out_file.write(bseq)
+    #obtained empirically for ran seqs
+    return len(out.getvalue())/ ( len(seq) * 0.641)
+
+print(get_complexity(args.sequence))
