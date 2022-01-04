@@ -7,7 +7,7 @@
 
 
 /* enumerate the 4 nucleotides */
-static int nt2int(char c)
+static Py_ssize_t nt2int(char c)
 {
 	switch (c) {
 		case 'A':
@@ -29,7 +29,7 @@ static int nt2int(char c)
 
 
 /* enumerate purines and pyrimidines */
-static int simple_nt2int(char c)
+static Py_ssize_t simple_nt2int(char c)
 {
 	switch (c) {
 		// purine
@@ -51,7 +51,7 @@ static int simple_nt2int(char c)
 
 
 /* enumerate the 20 standard amino acids */
-static int aa2int(char c)
+static Py_ssize_t aa2int(char c)
 {
 	switch (c) {
 		case 'A':
@@ -122,7 +122,7 @@ static int aa2int(char c)
 
 /* enumerate the amino acid types 
  * (reduced amino acid alphabet) */
-static int simple_aa2int(char c)
+static Py_ssize_t simple_aa2int(char c)
 {
 	switch (c) {
 		case 'A':
@@ -178,7 +178,7 @@ static int simple_aa2int(char c)
 	return -1;
 }
 
-static int alphabet_size(char c)
+static Py_ssize_t alphabet_size(char c)
 {
 	switch(c) {
 		case 'p':
@@ -199,7 +199,7 @@ static int alphabet_size(char c)
 }
 
 
-static int(*select_char2int(char c)) (char)
+static Py_ssize_t(*select_char2int(char c)) (char)
 {
 	switch(c) {
 	case 'a':
@@ -220,9 +220,9 @@ static int(*select_char2int(char c)) (char)
 }
 
 
-static int power(int base, int exponent)
+static Py_ssize_t power(Py_ssize_t base, Py_ssize_t exponent)
 {
-	int res = 1, i;
+	Py_ssize_t res = 1, i;
 	for (i=0; i<exponent; i++) {
 		res *= base;
 	}
@@ -233,18 +233,18 @@ static int power(int base, int exponent)
 static PyObject* count_words(PyObject* self, PyObject* args)
 {
     const char* seq;
-    int len;
-    int K;
+    Py_ssize_t len;
+    Py_ssize_t K;
     char alphabet;
  
     if (!PyArg_ParseTuple(args, "s#iC", &seq, &len, &K, &alphabet)) {
 		return NULL;
 	}
 	
-	int ALPHABET_SIZE = alphabet_size(alphabet);
-	int (*char2int)(char) = select_char2int(alphabet);
+	Py_ssize_t ALPHABET_SIZE = alphabet_size(alphabet);
+	Py_ssize_t (*char2int)(char) = select_char2int(alphabet);
 	
-	int N = power(ALPHABET_SIZE, K); // distinct words ALPHABET_SIZE**K
+	Py_ssize_t N = power(ALPHABET_SIZE, K); // distinct words ALPHABET_SIZE**K
 
 	// build the array
 	npy_intp dims[] = {N};
@@ -253,12 +253,12 @@ static PyObject* count_words(PyObject* self, PyObject* args)
 	memset(fv, 0, N * sizeof(npy_double));
 
 	// fill the vector
-	int i, j;
+	Py_ssize_t i, j;
 	for(i=0; i<=len-K; i+=K){
 		npy_intp ix=0;
 		for(j=0; j<K; ++j){
 			char c = toupper(seq[i+j]);
-			int c_index = char2int(c);
+			Py_ssize_t c_index = char2int(c);
 			if (c_index == -1){
 				break;
 			}
@@ -276,20 +276,20 @@ static PyObject* count_words(PyObject* self, PyObject* args)
 static PyObject* count_overlapping_words(PyObject* self, PyObject* args)
 {
     const char* seq;
-    int len;
-    int K;
+    Py_ssize_t len;
+    Py_ssize_t K;
     char alphabet;
  
     if (!PyArg_ParseTuple(args, "s#iC", &seq, &len, &K, &alphabet)) {
 		return NULL;
 	}
 
-	int ALPHABET_SIZE = alphabet_size(alphabet);
-	int (*char2int)(char) = select_char2int(alphabet);
+	Py_ssize_t ALPHABET_SIZE = alphabet_size(alphabet);
+	Py_ssize_t (*char2int)(char) = select_char2int(alphabet);
 	
 
-	int N = power(ALPHABET_SIZE, K); // distinct words
-	int MODULUS = N/ALPHABET_SIZE;
+	Py_ssize_t N = power(ALPHABET_SIZE, K); // distinct words
+	Py_ssize_t MODULUS = N/ALPHABET_SIZE;
 	
 	// build the array
 	npy_intp dims[] = {N};
@@ -299,10 +299,10 @@ static PyObject* count_overlapping_words(PyObject* self, PyObject* args)
 	memset(fv, 0, N * sizeof(npy_double));
 
     // implement counting
-	int pos = 0;
-	int in_progress = 0; // set to 1 when extending a valid word
+	Py_ssize_t pos = 0;
+	char in_progress = 0; // set to 1 when extending a valid word
 	npy_intp ix = 0;
-	int i;
+	Py_ssize_t i;
 	while (pos<len){
 		if (!in_progress){
 			if (pos>len-K){
@@ -312,7 +312,7 @@ static PyObject* count_overlapping_words(PyObject* self, PyObject* args)
 			in_progress = 1;
 			for(i=pos; (i<len) && (i<pos+K); ++i){
 				char c = toupper(seq[i]);
-				int c_index = char2int(c);
+				Py_ssize_t c_index = char2int(c);
 				if (c_index == -1){
 					pos = i+1;
 					in_progress = 0;
@@ -326,7 +326,7 @@ static PyObject* count_overlapping_words(PyObject* self, PyObject* args)
 			}
 		} else { // if (!in_progress)
 			char c = toupper(seq[pos]);
-			int c_index = char2int(c);
+			Py_ssize_t c_index = char2int(c);
 			if (c_index == -1){
 				in_progress = 0;
 				pos += 1;
@@ -346,10 +346,10 @@ static PyObject* count_sliding_overlapping_words(PyObject* self,
 PyObject* args)
 {
     const char* seq;
-    int len;
-    int K;
-    int win_size;
-    int step;
+    Py_ssize_t len;
+    Py_ssize_t K;
+    Py_ssize_t win_size;
+    Py_ssize_t step;
     char alphabet;
  
     if (!PyArg_ParseTuple(args, "s#iiiC", &seq, &len, &K, &win_size, &step, 
@@ -357,16 +357,16 @@ PyObject* args)
 		return NULL;
 	}
 
-	int ALPHABET_SIZE = alphabet_size(alphabet);
-	int (*char2int)(char) = select_char2int(alphabet);
+	Py_ssize_t ALPHABET_SIZE = alphabet_size(alphabet);
+	Py_ssize_t (*char2int)(char) = select_char2int(alphabet);
 
-	int N = power(ALPHABET_SIZE, K); // distinct words
-	int MODULUS = N/ALPHABET_SIZE;
+	Py_ssize_t N = power(ALPHABET_SIZE, K); // distinct words
+	Py_ssize_t MODULUS = N/ALPHABET_SIZE;
 	
 	// number of windows to process
 	// this expression can handle short len giving 0 or a negative M 
 	// when necessary
-	int M = (len - win_size - K + 1 + step) / step; 
+	Py_ssize_t M = (len - win_size - K + 1 + step) / step; 
 	if (M <= 0) {
 		Py_RETURN_NONE;
 	}
@@ -383,15 +383,15 @@ PyObject* args)
 	}
 
 	// word at each position
-	int *words = (int*) malloc((len - K + 1) * sizeof(int)); 
+	Py_ssize_t *words = (int*) malloc((len - K + 1) * sizeof(int)); 
 	memset(words, -1, (len - K + 1) * sizeof(int)); // initialize with -1
 	// the value of -1 indicates the word is not a valid k-mer
 
     // identify words and store them in a vector
-	int pos = 0;
-	int in_progress = 0; // set to 1 when extending a valid word
-	int ix = 0;
-	int i;
+	Py_ssize_t pos = 0;
+	char in_progress = 0; // set to 1 when extending a valid word
+	Py_ssize_t ix = 0;
+	Py_ssize_t i;
 	while (pos<len){
 		if (!in_progress){
 			if (pos>len-K){
@@ -401,7 +401,7 @@ PyObject* args)
 			in_progress = 1;
 			for(i=pos; i<pos+K; ++i){
 				char c = toupper(seq[i]);
-				int c_index = char2int(c);
+				Py_ssize_t c_index = char2int(c);
 				if (c_index == -1){
 					pos = i+1;
 					in_progress = 0;
@@ -415,7 +415,7 @@ PyObject* args)
 			}
 		} else { // if (!in_progress)
 			char c = toupper(seq[pos]);
-			int c_index = char2int(c);
+			Py_ssize_t c_index = char2int(c);
 			if (c_index == -1){
 				in_progress = 0;
 				pos++;
@@ -428,14 +428,14 @@ PyObject* args)
 	}
 
 	//compute array elements
-	int *starting_position = words; // starting point in the words vector
-	int m;
+	Py_ssize_t *starting_position = words; // starting poPy_ssize_t in the words vector
+	Py_ssize_t m;
 	for (m=0; m<M; m++) {
 		// pointer to the m-th row
 		npy_double* array_row = (npy_double*) PyArray_GETPTR2(rslt, m, 0);
 
 		for (i=0; i<win_size; i++) {
-			int cur_word = starting_position[i];
+			Py_ssize_t cur_word = starting_position[i];
 			if (cur_word >= 0) {
 				array_row[cur_word]++;
 			}
@@ -456,7 +456,7 @@ static PyObject* alphabet_size_ext(PyObject* self, PyObject* args)
 		return NULL;
 	}
 	
-	int ALPHABET_SIZE = alphabet_size(alphabet);
+	Py_ssize_t ALPHABET_SIZE = alphabet_size(alphabet);
 
     return Py_BuildValue("i", ALPHABET_SIZE);
 }
