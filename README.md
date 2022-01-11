@@ -46,3 +46,9 @@ fasta_xds fastafilename
 compute_sliding_window_force.py [-h] [-L WINDOW] [-c CONTIG] [-d DIMER] [-e END] [-s START] fasta_infile
 ```
 Arguments `CONTIG` to use, `START`, `END` and `WINDOW` length are optional. `DIMER` defaults to `CG`.
+
+* `CpG` force calculation for given coordinates:
+```
+compute_force_from_regions.py [-h] [-d DIMER] [-L MIN_LENGTH] [-s] fasta_infile coordinate_file
+```
+
