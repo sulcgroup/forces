@@ -51,4 +51,13 @@ Arguments `CONTIG` to use, `START`, `END` and `WINDOW` length are optional. `DIM
 ```
 compute_force_from_regions.py [-h] [-d DIMER] [-L MIN_LENGTH] [-s] fasta_infile coordinate_file
 ```
-
+Input file format for `coordinate_file`:
+```
+contig	start	end	OTHER_OPTIONAL_COLUMNS
+```
+If `-s` is specified, strand (+/-) is needed as well:
+```
+contig	start	end	strand	OTHER_OPTIONAL_COLUMNS
+```
+Regions shorter than `MIN_LENGTH` are removed.
+Output: the same as input plus an extra column with the force.
