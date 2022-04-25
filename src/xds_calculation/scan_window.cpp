@@ -1,7 +1,27 @@
 
 #include "scan_window.h"
+#include <algorithm>
 
 using namespace std;
+
+ 
+const std::string WHITESPACE = " \n\r\t\f\v";
+ 
+std::string ltrim(const std::string &s)
+{
+    size_t start = s.find_first_not_of(WHITESPACE);
+    return (start == std::string::npos) ? "" : s.substr(start);
+}
+ 
+std::string rtrim(const std::string &s)
+{
+    size_t end = s.find_last_not_of(WHITESPACE);
+    return (end == std::string::npos) ? "" : s.substr(0, end + 1);
+}
+ 
+std::string trim(const std::string &s) {
+    return rtrim(ltrim(s));
+}
 
 //--------------------------------------------------------------------------------------------------------------------------------------
 list<name_seq>  read_fasta( const string& fname ){
@@ -532,6 +552,7 @@ void process_genome(const string& chrom_seq,const string& output_file_name,const
     int sAs,sAe,sBs,sBe;
     ofstream out_pos(output_file_name+".positive_sense.xds");
     //ofstream out_neg(output_file_name+".negative_sense");
+    //string new_seq = chrom_seq.substr(start,stop-start+1)
     AssignSequences as(chrom_seq,window_size,slide_size,true);
     as.scan_and_do_xds(out_pos);
     
@@ -580,10 +601,12 @@ string load_chromosome(const string hg38_file,const string& chromosome)
     while( std::getline( input, line ).good() ){
         if( line.empty() || line[0] == '>' ){ // Identifier marker
             if( !name.empty() ){ // Print out what we read from the last entry
-                //std::cout << name << " : " << content << std::endl;
+                //std::cout << name << ": " << content << std::endl;
+                //std::cout << " looking for:" << chromosome << ";" << endl;
                 //loaded_seqs.push_back( make_pair(name,content)); 
-                if(name == chromosome) 
+                if(trim(name) == chromosome) 
                 { 
+                    //std::cout << " Loaded " << chromosome << ";" << endl;
                     transform(content.begin(),content.end(), content.begin(),::toupper);
                      return content;
 
@@ -649,9 +672,10 @@ int main(int argc, char **argv)
     
     if(argc != 8)
 	{
-		cerr << "Usage: " << argv[0] << " fasta_file_with_genome chromosome start stop shiftsize sequence_length outputfilename " << endl;
+		cerr << "Usage: " << argv[0] << " fasta_file_with_genome chromosome_name start stop shiftsize sequence_length outputfilename " << endl;
 		cerr << "Output:  window_start window_end length_of_complem_segment double_stranded_force | start_of_left_segment end_of_right_segment start_of_right_segment end_of_right_segment" << endl;
-		return 1;
+		 cerr << "note: if start or stop parameters is smaller than 0, the program scans the entire chromosome" << endl; 
+        return 1;
 	}
     try
     {
@@ -671,7 +695,12 @@ int main(int argc, char **argv)
            start = 0;
            stop = chromseq.length();
        }
+       else
+       {
+           chromseq = chromseq.substr(start,stop-start+1);
+       }
        cerr << "Loaded chromosome seq " << chromseq.length() << " long " << endl;
+       cerr << chromseq << endl;
        process_genome(chromseq,outputfname,chrom,start,stop,seqlen,shiftsize);
 
 
