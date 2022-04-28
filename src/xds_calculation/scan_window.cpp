@@ -633,7 +633,7 @@ string load_chromosome(const string hg38_file,const string& chromosome)
         transform(content.begin(),content.end(), content.begin(),::toupper);
         //loaded_seqs.push_back( make_pair(name,content));
         //cout << "loaded " << name << "|" << endl;
-        if ( name == chromosome )
+        if ( trim(name) == chromosome )
             return content;
     }
 
@@ -644,7 +644,8 @@ string load_chromosome(const string hg38_file,const string& chromosome)
 
 }
 //---------------------------------------------------------------------------------------------------------------------------------------
-void process_sequence_file(const char *fastafile,int window_size,int step_size,string outputfilename)
+
+/* void process_sequence_file(const char *fastafile,int window_size,int step_size,string outputfilename)
 {
        list<name_seq> rs = read_fasta(string(fastafile));
        cerr << "Loaded " << rs.size() << " sequences " << endl;
@@ -665,7 +666,8 @@ void process_sequence_file(const char *fastafile,int window_size,int step_size,s
            //cout << (*i).second.length() << " "  << maxlen << " " <<  AssignSequences::get_xds((*i).second,maxlen) << endl;
        }
  
-}
+} */
+
 //---------------------------------------------------------------------------------------------------------------------------------------
 int main(int argc, char **argv)
 {
