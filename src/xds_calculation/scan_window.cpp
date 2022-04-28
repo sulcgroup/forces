@@ -388,7 +388,7 @@ void AssignSequences::scan_and_do_xds(ostream &out)
       this->shift_and_fill_matrix(i,_shift_size);
       xds = extract_xds_from_matrix(maxlen,SaS,SaE,SbS, SbE);
   
-      out << i+_cmdline_start << " " << i + _cmdline_start + _window_size << " " <<  maxlen << " " << xds << " | " << SaS << "  " << SaE << "  " << SbS << " " << SbE  << endl;
+      out << _contig << "\t" << i+_cmdline_start << "\t" << i + _cmdline_start + _window_size << "\t" <<  maxlen << "\t" << xds << "\t|\t " << SaS << "\t" << SaE << "\t" << SbS << "\t" << SbE  << endl;
      
      
   }
@@ -535,7 +535,7 @@ string reverse_complement(const string &s,bool revert=false)
 }
 //------------------------------------------------------------------------------------------------------------------------------------
 //--------------------------------------------------------------------------------------------------------------------------------------
-void process_genome(const string& chrom_seq,const string& output_file_name,const string& chromosome_name,int start,int window_size,int slide_size)
+void process_genome(const string& chrom_seq,const string& output_file_name,const string& chromosome_name,int start,int window_size,int slide_size, string& chrom)
 {
     
     //string substr;
@@ -545,7 +545,7 @@ void process_genome(const string& chrom_seq,const string& output_file_name,const
     ofstream out_pos(output_file_name+".positive_sense.xds");
     //ofstream out_neg(output_file_name+".negative_sense");
     //string new_seq = chrom_seq.substr(start,stop-start+1)
-    AssignSequences as(chrom_seq,window_size,slide_size,true,start);
+    AssignSequences as(chrom_seq,window_size,slide_size,true,start, chrom);
     as.scan_and_do_xds(out_pos);
     
     /*
@@ -667,7 +667,7 @@ int main(int argc, char **argv)
     if(argc != 8)
 	{
 		cerr << "Usage: " << argv[0] << " fasta_file_with_genome chromosome_name start stop shiftsize sequence_length outputfilename " << endl;
-		cerr << "Output:  window_start window_end length_of_complem_segment double_stranded_force | start_of_left_segment end_of_right_segment start_of_right_segment end_of_right_segment" << endl;
+		cerr << "Output: contig window_start window_end length_of_complem_segment double_stranded_force | start_of_left_segment end_of_right_segment start_of_right_segment end_of_right_segment" << endl;
 		 cerr << "note: if start or stop parameters is smaller than 0, the program scans the entire chromosome" << endl; 
         return 1;
 	}
@@ -695,7 +695,7 @@ int main(int argc, char **argv)
        }
        cerr << "Loaded chromosome seq " << chromseq.length() << " long " << endl;
        //cerr << chromseq << endl;
-       process_genome(chromseq,outputfname,chrom,start,seqlen,shiftsize);
+       process_genome(chromseq,outputfname,chrom,start,seqlen,shiftsize,chrom);
 
 
     }
