@@ -32,11 +32,14 @@ class AssignSequences {
     bool _wobble; 
     int _start; 
     int _stop;
+    int _cmdline_start;
     int _N; //matrix size
    // list<double> xds;
 
   public:
-   AssignSequences(const string& seq, int window_size, int shift_size,bool wobble=true) : _seq(seq), _window_size(window_size), _shift_size(shift_size), _wobble(wobble) 
+   AssignSequences(const string& seq, int window_size, int shift_size,
+   bool wobble=true, int cmdline_start=0) : _seq(seq), _window_size(window_size),
+   _shift_size(shift_size), _wobble(wobble), _cmdline_start(cmdline_start)
    {
        _N = _window_size;
        this->_matrix = nullptr; // new int [N*N] ();

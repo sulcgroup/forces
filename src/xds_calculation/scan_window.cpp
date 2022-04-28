@@ -382,8 +382,8 @@ void AssignSequences::scan_and_do_xds(ostream &out)
       out << i << " " <<  xds << endl;
   }
   */
-  this->fill_matrix(0,this->_window_size);
-  int total_l = this->_seq.length();
+  this->fill_matrix(0,_window_size);
+  int total_l = _seq.length();
   int SaS,SaE,SbS, SbE;
 
   int maxlen = 0;// = this->get_maxlen_from_matrix(SaS,SaE,SbS, SbE);
@@ -391,12 +391,12 @@ void AssignSequences::scan_and_do_xds(ostream &out)
   
   out << 0 << " " << 0 + _window_size << " " <<  maxlen << " " << xds << " | " << SaS << "  " << SaE << "  " << SbS << " " << SbE  << endl;
 
-  for(int i = 0+this->_shift_size; i <= total_l  - _window_size; i += this->_shift_size)
+  for(int i = 0+_shift_size; i <= total_l  - _window_size; i += _shift_size)
   {
-      this->shift_and_fill_matrix(i,this->_shift_size);
+      this->shift_and_fill_matrix(i,_shift_size);
       xds = extract_xds_from_matrix(maxlen,SaS,SaE,SbS, SbE);
   
-      out << i << " " << i + _window_size << " " <<  maxlen << " " << xds << " | " << SaS << "  " << SaE << "  " << SbS << " " << SbE  << endl;
+      out << i+_cmdline_start << " " << i + _cmdline_start + _window_size << " " <<  maxlen << " " << xds << " | " << SaS << "  " << SaE << "  " << SbS << " " << SbE  << endl;
      
      
   }
@@ -543,7 +543,7 @@ string reverse_complement(const string &s,bool revert=false)
 }
 //------------------------------------------------------------------------------------------------------------------------------------
 //--------------------------------------------------------------------------------------------------------------------------------------
-void process_genome(const string& chrom_seq,const string& output_file_name,const string& chromosome_name,int start,int stop,int window_size,int slide_size)
+void process_genome(const string& chrom_seq,const string& output_file_name,const string& chromosome_name,int start,int window_size,int slide_size)
 {
     
     //string substr;
@@ -553,7 +553,7 @@ void process_genome(const string& chrom_seq,const string& output_file_name,const
     ofstream out_pos(output_file_name+".positive_sense.xds");
     //ofstream out_neg(output_file_name+".negative_sense");
     //string new_seq = chrom_seq.substr(start,stop-start+1)
-    AssignSequences as(chrom_seq,window_size,slide_size,true);
+    AssignSequences as(chrom_seq,window_size,slide_size,true,start);
     as.scan_and_do_xds(out_pos);
     
     /*
@@ -703,7 +703,7 @@ int main(int argc, char **argv)
        }
        cerr << "Loaded chromosome seq " << chromseq.length() << " long " << endl;
        cerr << chromseq << endl;
-       process_genome(chromseq,outputfname,chrom,start,stop,seqlen,shiftsize);
+       process_genome(chromseq,outputfname,chrom,start,seqlen,shiftsize);
 
 
     }
