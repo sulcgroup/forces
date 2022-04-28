@@ -7,20 +7,12 @@ using namespace std;
  
 const std::string WHITESPACE = " \n\r\t\f\v";
  
-std::string ltrim(const std::string &s)
-{
-    size_t start = s.find_first_not_of(WHITESPACE);
-    return (start == std::string::npos) ? "" : s.substr(start);
-}
- 
-std::string rtrim(const std::string &s)
-{
-    size_t end = s.find_last_not_of(WHITESPACE);
-    return (end == std::string::npos) ? "" : s.substr(0, end + 1);
-}
- 
-std::string trim(const std::string &s) {
-    return rtrim(ltrim(s));
+std::string trim(const std::string s) {
+    size_t pos = s.find_first_of(WHITESPACE);
+    if (pos != std::string::npos) {
+        return s.substr(0, pos);
+    }
+    return s;
 }
 
 //--------------------------------------------------------------------------------------------------------------------------------------
@@ -702,7 +694,7 @@ int main(int argc, char **argv)
            chromseq = chromseq.substr(start,stop-start+1);
        }
        cerr << "Loaded chromosome seq " << chromseq.length() << " long " << endl;
-       cerr << chromseq << endl;
+       //cerr << chromseq << endl;
        process_genome(chromseq,outputfname,chrom,start,seqlen,shiftsize);
 
 
