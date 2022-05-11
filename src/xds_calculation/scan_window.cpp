@@ -381,15 +381,16 @@ void AssignSequences::scan_and_do_xds(ostream &out)
   int maxlen = 0;// = this->get_maxlen_from_matrix(SaS,SaE,SbS, SbE);
   double xds = extract_xds_from_matrix(maxlen,SaS,SaE,SbS, SbE);
   
-  out << 0 << " " << 0 + _window_size << " " <<  maxlen << " " << xds << " | " << SaS << "  " << SaE << "  " << SbS << " " << SbE  << endl;
+  //out << 0 << " " << 0 + _window_size << " " <<  maxlen << " " << xds << " | " << SaS << "  " << SaE << "  " << SbS << " " << SbE  << endl;
+  
+  out << _contig << "\t" << _cmdline_start+1 << "\t" << _cmdline_start + _window_size << "\t" <<  maxlen << "\t" << xds << "\t|\t " << SaS << "\t" << SaE << "\t" << SbS << "\t" << SbE  << endl;
 
   for(int i = 0+_shift_size; i <= total_l  - _window_size; i += _shift_size)
   {
       this->shift_and_fill_matrix(i,_shift_size);
       xds = extract_xds_from_matrix(maxlen,SaS,SaE,SbS, SbE);
   
-      out << _contig << "\t" << i+_cmdline_start << "\t" << i + _cmdline_start + _window_size << "\t" <<  maxlen << "\t" << xds << "\t|\t " << SaS << "\t" << SaE << "\t" << SbS << "\t" << SbE  << endl;
-     
+      out << _contig << "\t" << i+_cmdline_start+1 << "\t" << i + _cmdline_start + _window_size << "\t" <<  maxlen << "\t" << xds << "\t|\t " << SaS << "\t" << SaE << "\t" << SbS << "\t" << SbE  << endl;
      
   }
 
@@ -666,7 +667,7 @@ int main(int argc, char **argv)
     
     if(argc != 8)
 	{
-		cerr << "Usage: " << argv[0] << " fasta_file_with_genome chromosome_name start stop shiftsize sequence_length outputfilename " << endl;
+		cerr << "Usage: " << argv[0] << " fasta_file_with_genome chromosome_name start-1-based stop shiftsize sequence_length outputfilename " << endl;
 		cerr << "Output: contig window_start window_end length_of_complem_segment double_stranded_force | start_of_left_segment end_of_right_segment start_of_right_segment end_of_right_segment" << endl;
 		 cerr << "note: if start or stop parameters is smaller than 0, the program scans the entire chromosome" << endl; 
         return 1;
@@ -677,8 +678,9 @@ int main(int argc, char **argv)
    
        string genome_file(argv[1]);
        string chrom(argv[2]);
-       int start = atoi(argv[3]);
-       int stop  = atoi(argv[4]);
+       int start = atoi(argv[3]) - 1; // convert 1-based to 0-based
+       int stop  = atoi(argv[4]);  // no need to convert since 0-based
+           // assumes half-open interval and 1-based assumes open interval
        //int minlength = atoi(argv[4]);
        int shiftsize = atoi(argv[5]);
        int seqlen    = atoi(argv[6]);
