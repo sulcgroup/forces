@@ -669,7 +669,7 @@ int main(int argc, char **argv)
 	{
 		cerr << "Usage: " << argv[0] << " fasta_file_with_genome chromosome_name start-1-based stop shiftsize sequence_length outputfilename " << endl;
 		cerr << "Output: contig window_start window_end length_of_complem_segment double_stranded_force | start_of_left_segment end_of_right_segment start_of_right_segment end_of_right_segment" << endl;
-		 cerr << "note: if start or stop parameters is smaller than 0, the program scans the entire chromosome" << endl; 
+		 cerr << "note: if start or stop parameters is smaller than 1, the program scans the entire contig" << endl; 
         return 1;
 	}
     try
@@ -681,21 +681,27 @@ int main(int argc, char **argv)
        int start = atoi(argv[3]) - 1; // convert 1-based to 0-based
        int stop  = atoi(argv[4]);  // no need to convert since 0-based
            // assumes half-open interval and 1-based assumes open interval
-       //int minlength = atoi(argv[4]);
        int shiftsize = atoi(argv[5]);
        int seqlen    = atoi(argv[6]);
        string outputfname(argv[7]);
        string chromseq = load_chromosome(genome_file,chrom);
-       if (start < 0 || stop < 0)
+       if (start < 0 || stop < 1)
        {
            start = 0;
            stop = chromseq.length();
        }
-       else
-       {
-           chromseq = chromseq.substr(start,stop-start+1);
+       int max_stop = chromseq.length() - seqlen + 1;
+       stop = min(max_stop, stop);
+       if (stop <= start) {
+           // no window fits within the range, benign error
+           return 0;
        }
-       cerr << "Loaded chromosome seq " << chromseq.length() << " long " << endl;
+       if (start || stop < max_stop)
+       {
+           chromseq = chromseq.substr(start,stop-start+seqlen);
+       }
+       cerr << "Loaded contig, sequence is " << chromseq.length()
+         << " bases long" << endl;
        //cerr << chromseq << endl;
        process_genome(chromseq,outputfname,chrom,start,seqlen,shiftsize,chrom);
 
