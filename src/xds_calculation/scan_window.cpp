@@ -698,7 +698,7 @@ int main(int argc, char **argv)
        }
        if (start || stop < max_stop)
        {
-           chromseq = chromseq.substr(start,stop-start+seqlen);
+           chromseq = chromseq.substr(start,stop-start-1+seqlen);
        }
        cerr << "Loaded contig, sequence is " << chromseq.length()
          << " bases long" << endl;
